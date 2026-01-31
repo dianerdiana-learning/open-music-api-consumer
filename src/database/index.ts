@@ -1,17 +1,28 @@
-// src/shared/libs/db.ts
 import { Pool, type PoolClient, type QueryResult, type QueryResultRow } from 'pg';
-import { env } from './env.config.js';
+import { env } from '../configs/env.config.js';
 
 export class Database {
-  private readonly pool: Pool;
+  private pool: Pool;
 
-  constructor() {
+  constructor({
+    host,
+    port,
+    user,
+    password,
+    database,
+  }: {
+    host: string;
+    port: number;
+    user: string;
+    password: string;
+    database: string;
+  }) {
     this.pool = new Pool({
-      host: env.db.host,
-      port: env.db.port,
-      user: env.db.user,
-      password: env.db.password,
-      database: env.db.database,
+      host,
+      port,
+      user,
+      password,
+      database,
     });
   }
 
@@ -19,12 +30,11 @@ export class Database {
     text: string,
     params?: any[],
   ): Promise<QueryResult<T>> {
-    try {
-      return await this.pool.query<T>(text, params);
-    } catch (error) {
-      console.error('[DB QUERY ERROR]', text, params, error);
-      throw error;
-    }
+    return this.pool.query<T>(text, params);
+  }
+
+  async getClient(): Promise<PoolClient> {
+    return this.pool.connect();
   }
 
   async transaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
@@ -47,4 +57,10 @@ export class Database {
   }
 }
 
-export const db = new Database();
+export const db = new Database({
+  host: env.db.host,
+  port: env.db.port,
+  user: env.db.user,
+  password: env.db.password,
+  database: env.db.database,
+});
