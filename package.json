@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/server.js",
-    "dev": "tsx watch src/server.ts",
+    "start": "node dist/consumer.js",
+    "dev": "tsx watch src/consumer.ts",
     "build": "npm run build:ts && npm run build:alias",
     "build:ts": "tsc",
     "build:alias": "tsc-alias",
